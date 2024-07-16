@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addExpense, deleteExpense, updateExpense } from '../redux/reducers/expenseReducer';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -109,7 +109,21 @@ const ExpenseScreen = () => {
 
 
     const handleDelete = (id) => {
-        dispatch(deleteExpense(id));
+        Alert.alert(
+            "Xác nhận xóa",
+            "Bạn có chắc chắn muốn xóa không ?",
+            [
+                {
+                    text: 'Hủy',
+                    onPress: () => { }
+                },
+                {
+                    text: 'Xác nhận',
+                    onPress: () => { dispatch(deleteExpense(id)); }
+                }
+            ]
+        )
+
     };
 
     const handleEdit = (id, title, description, date, type, money) => {
