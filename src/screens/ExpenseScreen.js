@@ -63,6 +63,11 @@ const ExpenseScreen = () => {
         );
     };
 
+    const isNumeric = (value) => {
+        return /^-?\d+\.?\d*$/.test(value);
+    };
+
+
     const handleAdd = () => {
         if (!title.trim() || !description.trim() || !date.trim() || !type.trim() || !money.trim()) {
             setError("Không được để trống");
@@ -76,6 +81,11 @@ const ExpenseScreen = () => {
 
         if (!isValidDate(date)) {
             setDateError("Ngày không hợp lệ");
+            return;
+        }
+
+        if (!isNumeric(money)) {
+            setError("Số tiền phải là số");
             return;
         }
 
@@ -96,6 +106,7 @@ const ExpenseScreen = () => {
         setError('');
         setDateError('');
     };
+
 
     const handleDelete = (id) => {
         dispatch(deleteExpense(id));
@@ -122,6 +133,11 @@ const ExpenseScreen = () => {
                 return;
             }
 
+            if (!isNumeric(editMoney)) {
+                setError("Số tiền phải là số");
+                return;
+            }
+
             dispatch(updateExpense({ id: idEdit, title: editTitle, description: editDescription, date: editDate, type: editType, money: editMoney }));
             setIdEdit(null);
             setEditTitle('');
@@ -135,6 +151,7 @@ const ExpenseScreen = () => {
             setError("Không được để trống");
         }
     };
+
 
     const filteredExpenses = listExpense.filter(expense =>
         expense.title.toLowerCase().includes(searchQuery.toLowerCase())
