@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { addExpense, deleteExpense, updateExpense } from '../redux/reducers/expenseReducer';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useDispatch, useSelector } from 'react-redux'; import AntDesign from 'react-native-vector-icons/AntDesign';
+import { addExpenseAPI, deleteExpenseAPI, editExpenseAPI, fetchExpense } from '../redux/actions/expenseAction';
 
 const ExpenseScreen = () => {
     const [title, setTitle] = useState("");
@@ -21,33 +20,36 @@ const ExpenseScreen = () => {
     const [error, setError] = useState("");
     const [dateError, setDateError] = useState("");
 
-    const [totalThu, setTotalThu] = useState(0);
-    const [totalChi, setTotalChi] = useState(0);
+    // const [totalThu, setTotalThu] = useState(0);
+    // const [totalChi, setTotalChi] = useState(0);
 
     const [searchQuery, setSearchQuery] = useState("");
 
     const listExpense = useSelector(state => state.expense.listExpense);
+    const totalThu = useSelector(state => state.expense.totalThu);
+    const totalChi = useSelector(state => state.expense.totalChi);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        TotalMoney();
-    }, [listExpense]);
+        dispatch(fetchExpense())
+    }, [dispatch]);
 
-    const TotalMoney = () => {
-        let totalThuAmount = 0;
-        let totalChiAmount = 0;
+    // const TotalMoney = () => {
+    //     console.log(total)
+    //     let totalThuAmount = 0;
+    //     let totalChiAmount = 0;
 
-        listExpense.forEach(expense => {
-            if (expense.type === "thu") {
-                totalThuAmount += parseFloat(expense.money);
-            } else if (expense.type === "chi") {
-                totalChiAmount += parseFloat(expense.money);
-            }
-        });
+    //     listExpense.forEach(expense => {
+    //         if (expense.type === "thu") {
+    //             totalThuAmount += parseFloat(expense.money);
+    //         } else if (expense.type === "chi") {
+    //             totalChiAmount += parseFloat(expense.money);
+    //         }
+    //     });
 
-        setTotalThu(totalThuAmount);
-        setTotalChi(totalChiAmount);
-    };
+    //     setTotalThu(totalThuAmount);
+    //     setTotalChi(totalChiAmount);
+    // };
 
     const isValidDate = (dateString) => {
         const pattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
@@ -95,9 +97,9 @@ const ExpenseScreen = () => {
             description: description,
             date: date,
             type: type,
-            money: money
+            money: parseFloat(money)
         };
-        dispatch(addExpense(newExpense));
+        dispatch(addExpenseAPI(newExpense));
         setTitle('');
         setDescription('');
         setDate('');
@@ -119,7 +121,9 @@ const ExpenseScreen = () => {
                 },
                 {
                     text: 'Xác nhận',
-                    onPress: () => { dispatch(deleteExpense(id)); }
+                    onPress: () => {
+                        dispatch(deleteExpenseAPI(id));
+                    }
                 }
             ]
         )
@@ -132,7 +136,7 @@ const ExpenseScreen = () => {
         setEditDescription(description);
         setEditDate(date);
         setEditType(type);
-        setEditMoney(money);
+        setEditMoney("" + money);
     };
 
     const handleUpdate = () => {
@@ -152,7 +156,7 @@ const ExpenseScreen = () => {
                 return;
             }
 
-            dispatch(updateExpense({ id: idEdit, title: editTitle, description: editDescription, date: editDate, type: editType, money: editMoney }));
+            dispatch(editExpenseAPI({ id: idEdit, title: editTitle, description: editDescription, date: editDate, type: editType, money: parseFloat(editMoney) }));
             setIdEdit(null);
             setEditTitle('');
             setEditDescription('');
